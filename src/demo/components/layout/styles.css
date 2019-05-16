@@ -1,0 +1,34 @@
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.padding {
+  padding: 16px;
+}
+
+.extra-padding {
+  padding: 32px;
+}
+
+.title-bar {
+  cursor: pointer;
+}
+
+.border {
+  border: 1px solid white;
+  border-radius: 5px;
+}
+
+.border-bottom {
+  border-bottom: 1px solid white;
+}
+
+.margin {
+  margin: 8px 0px;
+}
