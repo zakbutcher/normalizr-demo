@@ -8,7 +8,8 @@ import {
   getProducts,
   accountSchema,
   orderSchema,
-  selectAccountsForProductName
+  selectAccountsForProductName,
+  filterAccountsForProductName
 } from "./demo/util/normalizr";
 
 // #region Demo Data
@@ -38,7 +39,9 @@ const stateReducer = (state, action) => {
           ...state.entities,
           ...normalizedOrders.entities,
           ...normalizedAccounts.entities
-        }
+        },
+        accounts: accountData,
+        orders: orderData
       };
     case "SET_FILTER_PRODUCT_NAME":
       return {
@@ -74,9 +77,14 @@ function App() {
   const accounts = getAccounts(state);
   const orders = getOrders(state);
   const products = getProducts(state);
-  const filteredAccounts = selectAccountsForProductName(
+  const normalizedFilteredAccounts = selectAccountsForProductName(
     state,
     state.filterProductName
+  );
+  const manuallyFilteredAccountIds = filterAccountsForProductName(
+    state.filterProductName,
+    state.accounts,
+    state.orders
   );
   // #endregion Selectors
 
@@ -84,7 +92,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <Row>
-          Click to get started ->{" "}
+          Click to get started ->
           <button onClick={fetchData}>Fetch Data</button>
         </Row>
         <Accordion>
@@ -131,9 +139,9 @@ function App() {
                 <Row>
                   Product Name: <input onChange={updateFilterProductName} />
                 </Row>
-                {filteredAccounts &&
-                  filteredAccounts.map(accounts => (
-                    <Row key={accounts.id}>{accounts.name}</Row>
+                {normalizedFilteredAccounts &&
+                  normalizedFilteredAccounts.map(account => (
+                    <Row key={account.id}>{account.name}</Row>
                   ))}
               </Column>
             )

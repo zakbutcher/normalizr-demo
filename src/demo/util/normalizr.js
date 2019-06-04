@@ -1,5 +1,5 @@
 import { createSelector } from "reselect";
-import { schema, denormalize } from "normalizr";
+import { schema, denormalize, normalize } from "normalizr";
 
 const mergeOrders = (a = [], b = []) => a.concat(b);
 
@@ -42,6 +42,7 @@ export const selectAccountsForProductName = createSelector(
   [getSecondArg, getEntities],
   (productName, entities) => {
     if (!!productName) {
+      // Get list of products matching provided product name
       const matchingProductIds = Object.values(entities.products)
         .filter(product =>
           product.name.toLocaleLowerCase().includes(productName)
@@ -55,31 +56,44 @@ export const selectAccountsForProductName = createSelector(
         [productSchema],
         entities
       );
-      const uniqueAccountIds = denormalizedData.reduce(
-        (allAccounts, product) => {
-          const accountsForOrders = product.orders.reduce(
-            (orderAccounts, order) => {
-              if (orderAccounts.includes(order.account)) {
-                return orderAccounts;
-              }
-              return orderAccounts.concat(order.account.id);
-            },
-            []
-          );
 
-          const accountsToReturn = allAccounts.concat(
-            accountsForOrders.filter(account => !allAccounts.includes(account))
-          );
-
-          return accountsToReturn;
-        },
-        []
-      );
-
-      return Object.values(entities.accounts).filter(account =>
-        uniqueAccountIds.includes(account.id)
-      );
+      const normalizedData = normalize(denormalizedData, [productSchema]);
+      return !!normalizedData.entities.accounts
+        ? Object.values(normalizedData.entities.accounts)
+        : [];
     }
     return Object.values(entities.accounts);
   }
 );
+
+// Manual method without normalizr
+export const filterAccountsForProductName = (productName, accounts, orders) => {
+  // If no product name is provided, return all accounts
+  if (!!productName) {
+    // Get list of orders with matching products
+    const ordersWithProduct = orders.reduce((matchingOrders, currentOrder) => {
+      const hasMatchingProduct = currentOrder.products.find(product =>
+        product.name.toLocaleLowerCase().includes(productName)
+      );
+      return hasMatchingProduct
+        ? matchingOrders.concat(currentOrder)
+        : matchingOrders;
+    }, []);
+
+    // Get list of account ids associated with matching orders
+    const accountsIdsForProduct = ordersWithProduct.reduce(
+      (uniqueAccountIds, currentOrder) => {
+        return uniqueAccountIds.includes(currentOrder.account)
+          ? uniqueAccountIds
+          : uniqueAccountIds.concat(currentOrder.account);
+      },
+      []
+    );
+
+    // Get account objects for matching accounts
+    return accounts.filter(account =>
+      accountsIdsForProduct.includes(account.id)
+    );
+  }
+  return accounts || [];
+};
