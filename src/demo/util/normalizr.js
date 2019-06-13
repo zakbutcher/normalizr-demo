@@ -43,6 +43,7 @@ export const getProducts = state => Object.values(state.entities.products);
 export const selectAccountsForProductName = createSelector(
   [getSecondArg, getEntities],
   (productName, entities) => {
+    // If no product name is provided, return all accounts
     if (!!productName) {
       const startTime = new Date();
       // Get list of products matching provided product name
@@ -62,6 +63,8 @@ export const selectAccountsForProductName = createSelector(
         [productSchema],
         entities
       );
+
+      console.log("Denormalized Data: ", denormalizedData);
 
       // Normalize data to destructure data based on schemas
       const normalizedData = normalize(denormalizedData, [productSchema]);

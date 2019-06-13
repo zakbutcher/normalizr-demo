@@ -23,7 +23,8 @@ const initialState = {
     orders: {},
     products: {}
   },
-  filterAccountId: "",
+  accounts: [],
+  orders: [],
   filterProductName: ""
 };
 // #endregion State Setup
@@ -88,6 +89,7 @@ function App() {
   );
   // #endregion Selectors
 
+  console.log("current state: ", state);
   return (
     <div className="App">
       <header className="App-header">
