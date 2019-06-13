@@ -5,7 +5,7 @@ import { Row } from "./row";
 import { combineClassnames } from "../../util";
 
 export const Accordion = props => {
-  const { on, toggle } = useToggle(true);
+  const { on, toggle } = useToggle(false);
   const { titleBar, content } = props.children;
 
   const toggledClassnames = on ? "border-bottom" : "";

@@ -133,16 +133,29 @@ function App() {
             )
           }}
         </Accordion>
+        <Row>
+          Product Name: <input onChange={updateFilterProductName} />
+        </Row>
         <Accordion>
           {{
-            titleBar: "All Accounts that Bought Product",
+            titleBar: "Using normalizr",
             content: (
               <Column>
-                <Row>
-                  Product Name: <input onChange={updateFilterProductName} />
-                </Row>
                 {normalizedFilteredAccounts &&
                   normalizedFilteredAccounts.map(account => (
+                    <Row key={account.id}>{account.name}</Row>
+                  ))}
+              </Column>
+            )
+          }}
+        </Accordion>
+        <Accordion>
+          {{
+            titleBar: "Manual Filtering",
+            content: (
+              <Column>
+                {manuallyFilteredAccountIds &&
+                  manuallyFilteredAccountIds.map(account => (
                     <Row key={account.id}>{account.name}</Row>
                   ))}
               </Column>

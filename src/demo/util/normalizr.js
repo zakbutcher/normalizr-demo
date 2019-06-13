@@ -1,6 +1,7 @@
 import { createSelector } from "reselect";
 import { schema, denormalize, normalize } from "normalizr";
 
+// #region Schema Definitions
 const mergeOrders = (a = [], b = []) => a.concat(b);
 
 export const accountSchema = new schema.Entity("accounts");
@@ -31,6 +32,7 @@ export const orderSchema = new schema.Entity(
   }
 );
 productSchema.define({ orders: new schema.Array(orderSchema) });
+// #endregion Schema Definitions
 
 const getSecondArg = (state, secondArg) => secondArg;
 const getEntities = state => state.entities;
@@ -42,22 +44,31 @@ export const selectAccountsForProductName = createSelector(
   [getSecondArg, getEntities],
   (productName, entities) => {
     if (!!productName) {
+      const startTime = new Date();
       // Get list of products matching provided product name
       const matchingProductIds = Object.values(entities.products)
         .filter(product =>
-          product.name.toLocaleLowerCase().includes(productName)
+          product.name
+            .toLocaleLowerCase()
+            .includes(productName.toLocaleLowerCase())
         )
         .map(product => product.id);
 
       if (!matchingProductIds) return [];
 
+      // Denormalize data to build data structure based on relationships in schema
       const denormalizedData = denormalize(
         matchingProductIds,
         [productSchema],
         entities
       );
 
+      // Normalize data to destructure data based on schemas
       const normalizedData = normalize(denormalizedData, [productSchema]);
+
+      const endTime = new Date();
+      console.log(`normalizr time -> ${endTime - startTime}ms`);
+      // Return accounts or an empty array
       return !!normalizedData.entities.accounts
         ? Object.values(normalizedData.entities.accounts)
         : [];
@@ -70,10 +81,13 @@ export const selectAccountsForProductName = createSelector(
 export const filterAccountsForProductName = (productName, accounts, orders) => {
   // If no product name is provided, return all accounts
   if (!!productName) {
+    const startTime = new Date();
     // Get list of orders with matching products
     const ordersWithProduct = orders.reduce((matchingOrders, currentOrder) => {
       const hasMatchingProduct = currentOrder.products.find(product =>
-        product.name.toLocaleLowerCase().includes(productName)
+        product.name
+          .toLocaleLowerCase()
+          .includes(productName.toLocaleLowerCase())
       );
       return hasMatchingProduct
         ? matchingOrders.concat(currentOrder)
@@ -90,6 +104,8 @@ export const filterAccountsForProductName = (productName, accounts, orders) => {
       []
     );
 
+    const endTime = new Date();
+    console.log(`manual time -> ${endTime - startTime}ms`);
     // Get account objects for matching accounts
     return accounts.filter(account =>
       accountsIdsForProduct.includes(account.id)
