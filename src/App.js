@@ -28,7 +28,7 @@ const initialState = {
   filterProductName: ""
 };
 // #endregion State Setup
-// #region App Reducer
+// #region App Reducer - Demo
 const stateReducer = (state, action) => {
   switch (action.type) {
     case "FETCH_DATA":
@@ -53,7 +53,7 @@ const stateReducer = (state, action) => {
       return state;
   }
 };
-// #endregion App Reducer
+// #endregion App Reducer - Demo
 // #region App Actions
 const fetchDataAction = () => ({
   type: "FETCH_DATA"
@@ -74,7 +74,7 @@ function App() {
   const updateFilterProductName = event =>
     dispatch(setFilterProductName(event.target.value));
   // #endregion Callbacks
-  // #region Selectors
+  // #region Selectors - Demo
   const accounts = getAccounts(state);
   const orders = getOrders(state);
   const products = getProducts(state);
@@ -82,12 +82,12 @@ function App() {
     state,
     state.filterProductName
   );
-  const manuallyFilteredAccountIds = filterAccountsForProductName(
+  const manuallyFilteredAccounts = filterAccountsForProductName(
     state.filterProductName,
     state.accounts,
     state.orders
   );
-  // #endregion Selectors
+  // #endregion Selectors - Demo
 
   console.log("current state: ", state);
   return (
@@ -154,8 +154,8 @@ function App() {
             titleBar: "Manual Filtering",
             content: (
               <Column>
-                {manuallyFilteredAccountIds &&
-                  manuallyFilteredAccountIds.map(account => (
+                {manuallyFilteredAccounts &&
+                  manuallyFilteredAccounts.map(account => (
                     <Row key={account.id}>{account.name}</Row>
                   ))}
               </Column>
