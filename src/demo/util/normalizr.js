@@ -63,11 +63,11 @@ export const selectAccountsForProductName = createSelector(
         [productSchema],
         entities
       );
-
       console.log("Denormalized Data: ", denormalizedData);
 
       // Normalize data to destructure data based on schemas
       const normalizedData = normalize(denormalizedData, [productSchema]);
+      console.log("Re-Normalized Data: ", normalizedData);
 
       const endTime = new Date();
       console.log(`normalizr time -> ${endTime - startTime}ms`);
