@@ -94,8 +94,6 @@ function App() {
     <div className="App">
       <header className="App-header">
         <Row>
-          Check out this cool API first! https://anapioficeandfire.com/
-          <br />
           Click to get started ->
           <button onClick={fetchData}>Fetch Data</button>
         </Row>
